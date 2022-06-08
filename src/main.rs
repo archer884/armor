@@ -54,9 +54,10 @@ fn calculate_line_of_sight(args: &LineOfSight) {
 /// Combines two angles
 ///
 /// This function combines, for instance, the angle of a sloped plate with the angle of a vehicle
-/// not directly facing the viewer, as with a Tiger in an optimal fighting position. As this
-/// function does NOT perform conversions to radians, it is a mathematical error to call this
-/// function with a value representing degrees.
+/// not directly facing the viewer, as with a Tiger in an optimal fighting position.
+/// 
+/// This function operates in RADIANS. It is a mathematical error to call this function with values
+/// representing DEGREES.
 fn compound_angle(a: f64, b: f64) -> f64 {
     (a.cos() * b.cos()).acos()
 }
