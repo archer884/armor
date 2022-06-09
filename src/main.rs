@@ -30,6 +30,14 @@ struct LineOfSight {
     secondary: Option<f64>,
 }
 
+impl LineOfSight {
+    fn angle(&self) -> f64 {
+        let a = self.angle.to_radians();
+        let b = self.secondary.map(|secondary| secondary.to_radians());
+        b.map(|b| compound_angle(a, b)).unwrap_or(a)
+    }
+}
+
 fn main() {
     run(&Args::parse());
 }
@@ -42,12 +50,7 @@ fn run(args: &Args) {
 
 /// Calculate the line-of-sight thickness of a plate at a given slope
 fn calculate_line_of_sight(args: &LineOfSight) {
-    let angle = args
-        .secondary
-        .map(|lateral| compound_angle(args.angle.to_radians(), lateral.to_radians()))
-        .unwrap_or_else(|| args.angle.to_radians());
-
-    let line_of_sight = args.normal / angle.cos();
+    let line_of_sight = args.normal / args.angle().cos();
     println!("{line_of_sight:.02}");
 }
 
