@@ -31,6 +31,10 @@ struct LineOfSight {
 }
 
 impl LineOfSight {
+    /// The angle of incidence in RADIANS
+    ///
+    /// If a secondary angle is supplied, this value includes the compound angle. See
+    /// [`compound_angle`] for details.
     fn angle(&self) -> f64 {
         let a = self.angle.to_radians();
         let b = self.secondary.map(|secondary| secondary.to_radians());
