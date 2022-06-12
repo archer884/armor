@@ -1,3 +1,5 @@
+use std::f64::consts::PI;
+
 use clap::{Parser, Subcommand};
 
 /// armor calculator
@@ -12,10 +14,14 @@ struct Args {
 
 #[derive(Debug, Subcommand)]
 enum Command {
-    /// Calculates the line-of-sight thickness of a plate sloped at N° from the vertical. (Aliases
+    /// Calculates the LINE-OF-SIGHT thickness of a plate sloped at N° from the vertical. (Aliases
     /// for this command inclode l/los)
     #[clap(alias = "l", alias = "los")]
     LineOfSight(LineOfSight),
+
+    /// Calculates the slope of armor from NORMAL and LINE-OF-SIGHT thickness.
+    #[clap(alias = "fs")]
+    FindSlope(FindSlope),
 }
 
 #[derive(Debug, Parser)]
@@ -42,6 +48,15 @@ impl LineOfSight {
     }
 }
 
+#[derive(Debug, Parser)]
+struct FindSlope {
+    /// normal thickness
+    normal: f64,
+
+    /// line-of-sight thickness
+    line_of_sight: f64,
+}
+
 fn main() {
     run(&Args::parse());
 }
@@ -49,6 +64,7 @@ fn main() {
 fn run(args: &Args) {
     match &args.command {
         Command::LineOfSight(los) => calculate_line_of_sight(los),
+        Command::FindSlope(slope) => find_slope(slope),
     }
 }
 
@@ -56,6 +72,14 @@ fn run(args: &Args) {
 fn calculate_line_of_sight(args: &LineOfSight) {
     let line_of_sight = args.normal / args.angle().cos();
     println!("{line_of_sight:.02}");
+}
+
+/// Calculate the slope of a plate based on normal and line-of-sight thickness
+fn find_slope(args: &FindSlope) {
+    let a = (4.0 * args.normal * 7.0 + 1.0) * PI / 2.0;
+    let b = (args.normal / args.line_of_sight).asin();
+    let slope = (a - b).to_degrees() % 360.0;
+    println!("{slope:.02}");
 }
 
 /// Combines two angles
