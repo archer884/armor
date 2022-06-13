@@ -22,15 +22,22 @@ enum Command {
     FindSlope(FindSlope),
 }
 
+// Note: this disgusting value parser polution (see struct below) is a result of something to do
+// with the clap guys preparing for 4.0. May it be soon, because I won't be able to put up with
+// this trash for long.
+
 #[derive(Debug, Parser)]
 struct LineOfSight {
     /// normal thickness
+    #[clap(value_parser)]
     normal: f64,
 
     /// slope in degrees (0° == vertical)
+    #[clap(value_parser)]
     angle: f64,
 
     /// secondary (lateral) angle in degrees (optional; 0° == facing head on)
+    #[clap(value_parser)]
     secondary: Option<f64>,
 }
 
@@ -49,9 +56,11 @@ impl LineOfSight {
 #[derive(Debug, Parser)]
 struct FindSlope {
     /// normal thickness
+    #[clap(value_parser)]
     normal: f64,
 
     /// line-of-sight thickness
+    #[clap(value_parser)]
     line_of_sight: f64,
 }
 
