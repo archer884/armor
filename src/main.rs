@@ -12,14 +12,19 @@ struct Args {
 
 #[derive(Debug, Subcommand)]
 enum Command {
-    /// Calculates the LINE-OF-SIGHT thickness of a plate sloped at N° from the vertical. (Aliases
-    /// for this command inclode l/los)
+    /// Calculates the effective thickness of a plate sloped at N° from the vertical. (Aliases for
+    /// this command inclode l/los)
     #[clap(alias = "l", alias = "los")]
     LineOfSight(LineOfSight),
 
-    /// Calculates the slope of armor from NORMAL and LINE-OF-SIGHT thickness.
-    #[clap(alias = "fs")]
+    /// Calculates the slope of armor from normal and effective thickness.
+    #[clap(alias = "fs", alias = "slope")]
     FindSlope(FindSlope),
+
+    /// Calculates the required normal thickness of a plate presenting a given effective thickness
+    /// at a given angle of incidence.
+    #[clap(alias = "fn", alias = "normal")]
+    FindNormal(FindNormal),
 }
 
 // Note: this disgusting value parser polution (see struct below) is a result of something to do
@@ -59,9 +64,20 @@ struct FindSlope {
     #[clap(value_parser)]
     normal: f64,
 
-    /// line-of-sight thickness
+    /// effective thickness
     #[clap(value_parser)]
-    line_of_sight: f64,
+    effective: f64,
+}
+
+#[derive(Debug, Parser)]
+struct FindNormal {
+    /// required effective thickness
+    #[clap(value_parser)]
+    effective: f64,
+
+    /// expected angle of incidence
+    #[clap(value_parser)]
+    angle: f64,
 }
 
 fn main() {
@@ -72,19 +88,27 @@ fn run(args: &Args) {
     match &args.command {
         Command::LineOfSight(los) => calculate_line_of_sight(los),
         Command::FindSlope(slope) => find_slope(slope),
+        Command::FindNormal(normal) => find_normal(normal),
     }
 }
 
-/// Calculate the line-of-sight thickness of a plate at a given slope
+/// Calculate the effective thickness of a plate at a given slope
 fn calculate_line_of_sight(args: &LineOfSight) {
     let line_of_sight = args.normal / args.angle().cos();
     println!("{line_of_sight:.02}");
 }
 
-/// Calculate the slope of a plate based on normal and line-of-sight thickness
+/// Calculate the slope of a plate based on normal and effective thickness
 fn find_slope(args: &FindSlope) {
-    let slope = (args.normal / args.line_of_sight).acos().to_degrees();
+    let slope = (args.normal / args.effective).acos().to_degrees();
     println!("{slope:.02}");
+}
+
+/// Calculate the normal thickness of a plate presenting a given effective thickness at a given
+/// expected angle of incidence
+fn find_normal(args: &FindNormal) {
+    let normal = args.effective * args.angle.to_radians().cos();
+    println!("{normal:.02}");
 }
 
 /// Combines two angles
