@@ -1,5 +1,3 @@
-use std::f64::consts::PI;
-
 use clap::{Parser, Subcommand};
 
 /// armor calculator
@@ -76,9 +74,7 @@ fn calculate_line_of_sight(args: &LineOfSight) {
 
 /// Calculate the slope of a plate based on normal and line-of-sight thickness
 fn find_slope(args: &FindSlope) {
-    let a = (4.0 * args.normal * 7.0 + 1.0) * PI / 2.0;
-    let b = (args.normal / args.line_of_sight).asin();
-    let slope = (a - b).to_degrees() % 360.0;
+    let slope = (args.normal / args.line_of_sight).acos().to_degrees();
     println!("{slope:.02}");
 }
 
