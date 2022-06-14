@@ -40,7 +40,7 @@ struct LineOfSight {
 }
 
 impl LineOfSight {
-    /// The angle of incidence in RADIANS
+    /// The angle of incidence in radians
     ///
     /// If a secondary angle is supplied, this value includes the compound angle. See
     /// [`compound_angle`] for details.
